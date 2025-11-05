@@ -24,19 +24,19 @@
       "template": "{{created_at}}"
     },
     "likes": {
-      "type": "integer",
+      "type": "string",
       "title": "Likes",
       "description": "Total number of likes on the post.",
       "template": "{{likes}}"
     },
     "reposts": {
-      "type": "integer",
+      "type": "string",
       "title": "Reposts",
       "description": "Total number of reposts (shares).",
       "template": "{{reposts}}"
     },
     "comments": {
-      "type": "integer",
+      "type": "string",
       "title": "Comments",
       "description": "Total number of comments.",
       "template": "{{comments}}"
