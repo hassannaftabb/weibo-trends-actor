@@ -1,0 +1,24 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "title": "Weibo Lifestyle UGC Scraper Output",
+  "properties": {
+    "overview": {
+      "type": "string",
+      "title": "Overview",
+      "description": "View summarized post data (author, text, likes, comments, reposts).",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=overview"
+    },
+    "lifestyle_trends": {
+      "type": "string",
+      "title": "Lifestyle Trends",
+      "description": "View extracted Weibo posts for lifestyle-related topics such as 护肤, 健身, 旅行, 穿搭, 美食.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items?view=lifestyle_trends"
+    },
+    "raw_data": {
+      "type": "string",
+      "title": "Raw Dataset",
+      "description": "Access the complete raw dataset of all scraped Weibo posts.",
+      "template": "{{links.apiDefaultDatasetUrl}}/items"
+    }
+  }
+}

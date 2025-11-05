@@ -1,0 +1,46 @@
+{
+  "title": "Weibo Trending UGC Scraper Input",
+  "description": "Input parameters for scraping trending lifestyle-related user-generated content (UGC) posts from Weibo.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "max_hashtags": {
+      "title": "Max Trending Hashtags",
+      "type": "integer",
+      "description": "Maximum number of trending hashtags to fetch from the Weibo Hot Search (1–50).",
+      "editor": "number",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 50
+    },
+    "max_posts_per_hashtag": {
+      "title": "Max Posts per Hashtag",
+      "type": "integer",
+      "description": "Number of posts to scrape for each trending hashtag (1–50).",
+      "editor": "number",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 50
+    },
+    "max_pages": {
+      "title": "Max Pages per Hashtag",
+      "type": "integer",
+      "description": "Number of result pages to scrape per hashtag (1–10).",
+      "editor": "number",
+      "default": 3,
+      "minimum": 1,
+      "maximum": 10
+    },
+    "concurrency": {
+      "title": "Concurrency Level",
+      "type": "integer",
+      "description": "Number of concurrent requests when scraping posts (1–20).",
+      "editor": "number",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 20
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

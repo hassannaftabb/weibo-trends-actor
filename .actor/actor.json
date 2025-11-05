@@ -1,0 +1,12 @@
+{
+  "actorSpecification": 1,
+  "name": "weibo-lifestyle-trends-actor",
+  "title": "Weibo Lifestyle Trends Actor",
+  "description": "Scrapes trending UGC lifestule trends or topic-based posts from Weibo with likes, comments, reposts & hashtags.",
+  "version": "1.0.0",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "output": "./dataset_schema.json",
+  "readme": "../README.md",
+  "dockerfile": "../Dockerfile"
+}

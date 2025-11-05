@@ -1,0 +1,82 @@
+{
+  "actorOutputSchemaVersion": 1,
+  "actorSpecification": 1,
+  "title": "Weibo UGC Dataset Schema",
+  "description": "Defines the structure of data items output by the Weibo Lifestyle UGC Scraper.",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "title": "Post ID",
+      "description": "Unique identifier for the Weibo post",
+      "template": "{{post_id}}"
+    },
+    "text_raw": {
+      "type": "string",
+      "title": "Text",
+      "description": "Raw post text content",
+      "template": "{{text_raw}}"
+    },
+    "created_at": {
+      "type": "string",
+      "title": "Created At",
+      "description": "Time of post creation (ISO string)",
+      "template": "{{created_at}}"
+    },
+    "likes": {
+      "type": "string",
+      "title": "Likes",
+      "description": "Number of likes",
+      "template": "{{likes}}"
+    },
+    "reposts": {
+      "type": "string",
+      "title": "Reposts",
+      "description": "Number of reposts",
+      "template": "{{reposts}}"
+    },
+    "comments": {
+      "type": "string",
+      "title": "Comments",
+      "description": "Number of comments",
+      "template": "{{comments}}"
+    },
+    "pics": {
+      "type": "string",
+      "title": "Pictures",
+      "description": "List of image URLs (comma-separated)",
+      "template": "{{pics}}"
+    },
+    "author_id": {
+      "type": "string",
+      "title": "Author ID",
+      "description": "Unique ID of the author",
+      "template": "{{author_id}}"
+    },
+    "author_name": {
+      "type": "string",
+      "title": "Author Name",
+      "description": "Display name of the post author",
+      "template": "{{author_name}}"
+    },
+    "verified": {
+      "type": "string",
+      "title": "Verified",
+      "description": "Whether the author is verified",
+      "template": "{{verified}}"
+    },
+    "followers": {
+      "type": "string",
+      "title": "Followers",
+      "description": "Number of followers of the author",
+      "template": "{{followers}}"
+    },
+    "hashtags": {
+      "type": "string",
+      "title": "Hashtags",
+      "description": "List of hashtags in the post (comma-separated)",
+      "template": "{{hashtags}}"
+    }
+  },
+  "required": ["post_id", "text_raw", "author_name"]
+}
