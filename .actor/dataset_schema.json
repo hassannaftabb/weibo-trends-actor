@@ -42,7 +42,7 @@
       "template": "{{comments}}"
     },
     "engagement_score": {
-      "type": "number",
+      "type": "string",
       "title": "Engagement Score",
       "description": "Computed engagement score combining likes, reposts, and comments.",
       "template": "{{engagement_score}}"
