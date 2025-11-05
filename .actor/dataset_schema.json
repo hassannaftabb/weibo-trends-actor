@@ -2,80 +2,100 @@
   "actorOutputSchemaVersion": 1,
   "actorSpecification": 1,
   "title": "Weibo UGC Dataset Schema",
-  "description": "Defines the structure of data items output by the Weibo Lifestyle UGC Scraper.",
+  "description": "Defines the structure of the Weibo UGC dataset, including post content, engagement metrics, and author details.",
   "type": "object",
   "properties": {
     "post_id": {
       "type": "string",
       "title": "Post ID",
-      "description": "Unique identifier for the Weibo post",
+      "description": "Unique identifier for the Weibo post.",
       "template": "{{post_id}}"
     },
     "text_raw": {
       "type": "string",
-      "title": "Text",
-      "description": "Raw post text content",
+      "title": "Text Content",
+      "description": "Raw text content of the post.",
       "template": "{{text_raw}}"
     },
     "created_at": {
       "type": "string",
       "title": "Created At",
-      "description": "Time of post creation (ISO string)",
+      "description": "Timestamp when the post was created (ISO format).",
       "template": "{{created_at}}"
     },
     "likes": {
-      "type": "string",
+      "type": "integer",
       "title": "Likes",
-      "description": "Number of likes",
+      "description": "Total number of likes on the post.",
       "template": "{{likes}}"
     },
     "reposts": {
-      "type": "string",
+      "type": "integer",
       "title": "Reposts",
-      "description": "Number of reposts",
+      "description": "Total number of reposts (shares).",
       "template": "{{reposts}}"
     },
     "comments": {
-      "type": "string",
+      "type": "integer",
       "title": "Comments",
-      "description": "Number of comments",
+      "description": "Total number of comments.",
       "template": "{{comments}}"
     },
+    "engagement_score": {
+      "type": "number",
+      "title": "Engagement Score",
+      "description": "Computed engagement score combining likes, reposts, and comments.",
+      "template": "{{engagement_score}}"
+    },
     "pics": {
-      "type": "string",
+      "type": "array",
+      "items": { "type": "string" },
       "title": "Pictures",
-      "description": "List of image URLs (comma-separated)",
+      "description": "List of image URLs in the post.",
       "template": "{{pics}}"
     },
     "author_id": {
       "type": "string",
       "title": "Author ID",
-      "description": "Unique ID of the author",
+      "description": "Unique ID of the post author.",
       "template": "{{author_id}}"
     },
     "author_name": {
       "type": "string",
       "title": "Author Name",
-      "description": "Display name of the post author",
+      "description": "Display name of the post author.",
       "template": "{{author_name}}"
     },
     "verified": {
-      "type": "string",
+      "type": "boolean",
       "title": "Verified",
-      "description": "Whether the author is verified",
+      "description": "Indicates if the author is verified.",
       "template": "{{verified}}"
     },
     "followers": {
-      "type": "string",
+      "type": "integer",
       "title": "Followers",
-      "description": "Number of followers of the author",
+      "description": "Number of followers the author has.",
       "template": "{{followers}}"
     },
     "hashtags": {
-      "type": "string",
+      "type": "array",
+      "items": { "type": "string" },
       "title": "Hashtags",
-      "description": "List of hashtags in the post (comma-separated)",
+      "description": "List of hashtags mentioned in the post.",
       "template": "{{hashtags}}"
+    },
+    "source_hashtag": {
+      "type": "string",
+      "title": "Source Hashtag",
+      "description": "The trending hashtag under which this post was collected.",
+      "template": "{{source_hashtag}}"
+    },
+    "collected_at": {
+      "type": "string",
+      "title": "Collected At",
+      "description": "Timestamp when this post was scraped (ISO format).",
+      "template": "{{collected_at}}"
     }
   },
   "required": ["post_id", "text_raw", "author_name"]

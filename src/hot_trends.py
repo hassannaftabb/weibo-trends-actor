@@ -2,6 +2,7 @@ from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 from html import unescape
 import asyncio
+import re
 
 HOT_SEARCH_URL = "https://s.weibo.com/top/summary"
 
@@ -24,7 +25,6 @@ async def fetch_hot_hashtags(limit=20):
                 await browser.close()
                 return []
 
-        # give it a couple of seconds for JS to populate
         await asyncio.sleep(3)
 
         html = await page.content()
@@ -44,6 +44,7 @@ async def fetch_hot_hashtags(limit=20):
 
         if link and link.text.strip():
             tag = unescape(link.text.strip())
+            tag = re.sub(r"[^\u4e00-\u9fffA-Za-z0-9#]+", "", tag)
             try:
                 tag = tag.encode("latin1", "ignore").decode("gbk", "ignore")
             except Exception:
@@ -51,6 +52,8 @@ async def fetch_hot_hashtags(limit=20):
                     tag = tag.encode("latin1", "ignore").decode("utf-8", "ignore")
                 except Exception:
                     pass
+            if not tag or len(tag) < 2:
+                continue
 
             heat = None
             if heat_span:
