@@ -66,20 +66,19 @@
       "template": "{{author_name}}"
     },
     "verified": {
-      "type": "boolean",
+      "type": "string",
       "title": "Verified",
       "description": "Indicates if the author is verified.",
       "template": "{{verified}}"
     },
     "followers": {
-      "type": "integer",
+      "type": "string",
       "title": "Followers",
       "description": "Number of followers the author has.",
       "template": "{{followers}}"
     },
     "hashtags": {
-      "type": "array",
-      "items": { "type": "string" },
+      "type": "string",
       "title": "Hashtags",
       "description": "List of hashtags mentioned in the post.",
       "template": "{{hashtags}}"
