@@ -48,10 +48,9 @@
       "template": "{{engagement_score}}"
     },
     "pics": {
-      "type": "array",
-      "items": { "type": "string" },
+      "type": "string",
       "title": "Pictures",
-      "description": "List of image URLs in the post.",
+      "description": "List of image URLs (comma-separated)",
       "template": "{{pics}}"
     },
     "author_id": {
