@@ -40,14 +40,14 @@ async def fetch_visitor_cookies():
                 cookies = await context.cookies()
                 if cookies:
                     await browser.close()
-                    Actor.log.info("✅ Successfully fetched cookies.")
+                    Actor.log.info(" Successfully fetched cookies.")
                     return cookies
             except Exception as e:
-                Actor.log.warning(f"⚠️ Failed to load {url}: {str(e)}")
+                Actor.log.warning(f"Failed to load {url}: {str(e)}")
                 continue
 
         await browser.close()
-        raise RuntimeError("❌ All attempts to fetch Weibo cookies failed.")
+        raise RuntimeError("All attempts to fetch Weibo cookies failed.")
 
 
 async def load_or_refresh_cookies():
