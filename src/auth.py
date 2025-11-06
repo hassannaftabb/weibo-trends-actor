@@ -3,25 +3,51 @@ import time
 from apify import Actor
 from playwright.async_api import async_playwright
 from fake_useragent import UserAgent
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 COOKIE_KEY = "weibo_cookies"
 COOKIE_TTL_HOURS = 12
 
-
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
 async def fetch_visitor_cookies():
     ua = UserAgent().random
+    Actor.log.info("Launching Playwright to fetch visitor cookies...")
+
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-blink-features=AutomationControlled"
+            ]
+        )
+
         context = await browser.new_context(user_agent=ua)
         page = await context.new_page()
-        try:
-            await page.goto("https://m.weibo.cn", wait_until="networkidle", timeout=10000)
-        except Exception:
-            await page.goto("https://weibo.com", wait_until="networkidle", timeout=10000)
-        await asyncio.sleep(5)
-        cookies = await context.cookies()
+
+        urls = [
+            "https://m.weibo.cn/",
+            "https://weibo.com/",
+            "https://s.weibo.com/top/summary"
+        ]
+
+        for url in urls:
+            try:
+                Actor.log.info(f"Trying to load {url}")
+                await page.goto(url, wait_until="domcontentloaded", timeout=25000)
+                await asyncio.sleep(5)
+                cookies = await context.cookies()
+                if cookies:
+                    await browser.close()
+                    Actor.log.info("✅ Successfully fetched cookies.")
+                    return cookies
+            except Exception as e:
+                Actor.log.warning(f"⚠️ Failed to load {url}: {str(e)}")
+                continue
+
         await browser.close()
-        return cookies
+        raise RuntimeError("❌ All attempts to fetch Weibo cookies failed.")
 
 
 async def load_or_refresh_cookies():
