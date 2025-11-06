@@ -24,8 +24,11 @@ async def main():
         Actor.log.info("Fetching hot trending hashtags from Weibo...")
         trending_tags = await fetch_hot_hashtags(limit=getattr(input_cfg, 'max_hashtags', 10))
 
-        for t in trending_tags:
-            Actor.log.info(f"#{t['rank']}: {t['hashtag']} (heat={t['heat']})")
+        for i, t in enumerate(trending_tags, start=1):
+            rank = t.get("rank", i)
+            Actor.log.info(f"#{rank}: {t['hashtag']} (heat={t.get('heat')})")
+            t["rank"] = rank
+
 
         Actor.log.info(f"Found {len(trending_tags)} trending hashtags.")
         all_results = []

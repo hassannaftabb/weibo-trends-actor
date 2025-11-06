@@ -1,92 +1,82 @@
-from playwright.async_api import async_playwright
-from bs4 import BeautifulSoup
-from html import unescape
-import asyncio
+import aiohttp
 import re
-from .auth import load_or_refresh_cookies
+from bs4 import BeautifulSoup
+from .auth import load_or_refresh_cookies, cookies_to_header
 
-HOT_SEARCH_URL = "https://s.weibo.com/top/summary"
+MOBILE_API_URL = (
+    "https://m.weibo.cn/api/container/getIndex?"
+    "containerid=102803_ctg1_9999_-_ctg1_9999_home"
+)
 
 
-async def fetch_hot_hashtags(limit=20):
-    """Fetch trending hashtags from Weibo hot search using authenticated session."""
+async def fetch_hot_hashtags(limit: int = 20):
+    """Fetch trending hashtags from Weibo's mobile JSON API (stable global method)."""
+    print("[apify] INFO  Fetching trending hashtags via Weibo mobile API...")
+
     cookies = await load_or_refresh_cookies()
+    cookie_header = cookies_to_header(cookies)
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-blink-features=AutomationControlled",
-            ],
-        )
-        context = await browser.new_context()
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Linux; Android 10; SM-G973F) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/123.0 Mobile Safari/537.36"
+        ),
+        "Referer": "https://m.weibo.cn/",
+        "Cookie": cookie_header,
+    }
 
-        await context.add_cookies(cookies)
+    try:
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.get(MOBILE_API_URL, timeout=25) as resp:
+                text = await resp.text()
+                if "Sina Visitor System" in text:
+                    print("[WARN] Got redirected to visitor page, retrying with fresh cookies...")
+                    cookies = await load_or_refresh_cookies()
+                    headers["Cookie"] = cookies_to_header(cookies)
+                    async with aiohttp.ClientSession(headers=headers) as s2:
+                        async with s2.get(MOBILE_API_URL, timeout=25) as r2:
+                            data = await r2.json(content_type=None)
+                else:
+                    data = await resp.json(content_type=None)
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch from Weibo mobile API: {e}")
+        return []
 
-        page = await context.new_page()
-
-        try:
-            await page.goto(HOT_SEARCH_URL, wait_until="domcontentloaded", timeout=25000)
-        except Exception:
-            print("[WARN] networkidle wait failed, retrying with plain load...")
-            try:
-                await page.goto(HOT_SEARCH_URL, wait_until="load", timeout=25000)
-            except Exception as e:
-                print(f"[ERROR] Could not load Weibo hot search page: {e}")
-                await browser.close()
-                return []
-
-        await asyncio.sleep(3)
-
-        html = await page.content()
-        await browser.close()
-
-    soup = BeautifulSoup(html, "html.parser")
-    rows = soup.select("tbody tr")
-
-    if not rows:
-        print("[WARN] Hot search table not found (possibly visitor system).")
+    cards = data.get("data", {}).get("cards", [])
+    if not cards:
+        print("[WARN] No cards returned from mobile API.")
         return []
 
     trends = []
-    for i, row in enumerate(rows[:limit]):
-        link = row.select_one("td.td-02 a")
-        heat_span = row.select_one("td.td-02 span")
+    for card in cards:
+        mblog = card.get("mblog", {})
+        html_text = mblog.get("text", "")
+        if not html_text:
+            continue
 
-        if link and link.text.strip():
-            tag = unescape(link.text.strip())
-            # ✅ sanitize Chinese + ASCII only
-            tag = re.sub(r"[^\u4e00-\u9fffA-Za-z0-9#]+", "", tag)
+        soup = BeautifulSoup(html_text, "html.parser")
+        clean_text = soup.get_text()
+        hashtags = re.findall(r"#(.*?)#", clean_text)
+        for tag in hashtags:
+            tag = tag.strip()
+            if tag and len(tag) > 1:
+                trends.append({"hashtag": tag, "heat": None})
 
-            # ✅ decoding fallback
-            try:
-                tag = tag.encode("latin1", "ignore").decode("gbk", "ignore")
-            except Exception:
-                try:
-                    tag = tag.encode("latin1", "ignore").decode("utf-8", "ignore")
-                except Exception:
-                    pass
+        if len(trends) >= limit:
+            break
 
-            if not tag or len(tag) < 2:
-                continue
-
-            heat = None
-            if heat_span:
-                text = heat_span.text.strip()
-                try:
-                    if "万" in text:
-                        heat = int(float(text.replace("万", "")) * 10000)
-                    else:
-                        heat = int(text)
-                except ValueError:
-                    pass
-
-            trends.append({"rank": i + 1, "hashtag": tag, "heat": heat})
-
-    print(f"[INFO] Extracted {len(trends)} trending hashtags.")
+    # hashtags dedup
+    seen = set()
+    unique_trends = []
     for t in trends:
-        print(f"#{t['rank']}: {t['hashtag']} ({t['heat']})")
+        tag = t["hashtag"]
+        if tag not in seen:
+            unique_trends.append(t)
+            seen.add(tag)
 
-    return trends
+    print(f"[INFO] Extracted {len(unique_trends)} trending hashtags from mobile API.")
+    for i, t in enumerate(unique_trends[:limit], start=1):
+        print(f"#{i}: {t['hashtag']}")
+
+    return unique_trends[:limit]
