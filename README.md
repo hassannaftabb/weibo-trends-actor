@@ -1,4 +1,4 @@
-# Weibo UGC Lifestyle Trends Scraper
+# Weibo UGC Trends Scraper
 
 This Apify Actor scrapes **User-Generated Content (UGC)** from [Weibo](https://weibo.com) to uncover **lifestyle trends, topics, and engagement metrics** across China’s most popular social platform.
 It leverages **Playwright**, **aiohttp**, and **BeautifulSoup** for dynamic page rendering, session handling, and structured data extraction.
